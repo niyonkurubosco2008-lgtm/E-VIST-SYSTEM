@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="rw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E VIST - Sisitemu y'Impushya, Gusura n'Ibitekerezo</title>
+    
+    <!-- Chart.js yo gukora Imbonerahamwe (Analytics) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; color: #333; }
+        header { 
+            background-color: #1a252f; 
+            color: #ffffff; 
+            padding: 20px; 
+            text-align: center; 
+            position: relative;
+        }
+        .lang-selector {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .lang-selector select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #1abc9c;
+            background: #ffffff;
+            color: #1a252f;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        nav { background-color: #2c3e50; display: flex; justify-content: center; padding: 10px; flex-wrap: wrap; }
+        nav a { color: white; text-decoration: none; padding: 10px 18px; font-weight: bold; cursor: pointer; }
+        nav a:hover, nav a.active-link { background-color: #1abc9c; border-radius: 5px; }
+
+        .container { max-width: 850px; margin: 20px auto 30px auto; padding: 25px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .section { display: none; }
+        .active { display: block; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { background-color: #1abc9c; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
+        .btn:hover { background-color: #16a085; }
+        .btn-secondary { background-color: #34495e; margin-top: 10px; }
+        .btn-secondary:hover { background-color: #2c3e50; }
+        .btn-verification { background-color: #e67e22; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 5px; }
+        .btn-verification:hover { background-color: #d35400; }
+        .btn-export { background-color: #8e44ad; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-right: 5px; }
+        .btn-export:hover { background-color: #71368a; }
+        
+        .btn-approve { background-color: #27ae60; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 5px; }
+        .btn-reject { background-color: #c0392b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 5px; }
+        .btn-parent-confirm { background-color: #f39c12; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-pass { background-color: #2980b9; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 5px; display: inline-block; }
+
+        .otp-box { background: #fff8e1; border: 1px dashed #ffa000; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 10px; text-align: left; font-size: 14px; }
+        th { background-color: #2c3e50; color: white; }
+        .filter-box { background: #eef2f5; padding: 15px; border-radius: 6px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        
+        .badge { background-color: #e74c3c; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; }
+        
+        .help-card { border-left: 4px solid #1abc9c; background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        .help-guide-box { background: #eef7f6; border: 1px solid #1abc9c; border-radius: 6px; padding: 15px; margin-top: 15px; }
+        .help-guide-box h4 { margin-top: 0; color: #16a085; }
+        .help-guide-box ul { padding-left: 20px; }
+        .help-guide-box li { margin-bottom: 8px; line-height: 1.5; }
+
+        .school-tag {
+            display: inline-block;
+            background: #2980b9;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pass-card {
+            border: 2px dashed #1abc9c;
+            background: #fdfdfd;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .evist-ai-widget {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            font-weight: bold;
+            font-size: 14px;
+            border: 2px solid #ffffff;
+        }
+        .evist-ai-widget:hover { transform: scale(1.05); }
+
+        /* REAL-TIME TOAST NOTIFICATION STYLES */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            min-width: 250px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s ease, fadeOut 0.5s ease 3.5s forwards;
+        }
+        .toast-success { background-color: #27ae60; }
+        .toast-error { background-color: #c0392b; }
+        .toast-info { background-color: #2980b9; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
+        /* FORUM LIVE FEED CARD STYLES */
+        .forum-card {
+            background: #ffffff;
+            border: 1px solid #e1e8ed;
+            border-left: 4px solid #1abc9c;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        .forum-card-meta {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .lang-selector { position: static; justify-content: center; margin-top: 10px; }
+        }
+    </style>
+
+    <!-- Firebase SDK Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, collection, addDoc, getDocs, getDoc, query, where, orderBy, onSnapshot, doc, updateDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "e-vist-app.firebaseapp.com",
+            projectId: "e-vist-app",
+            storageBucket: "e-vist-app.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.firestoreTools = { collection, addDoc, getDocs, getDoc, query, where, orderBy, onSnapshot, doc, updateDoc };
+    </script>
+</head>
+<body>
+
+    <!-- REAL-TIME TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer"></div>
+
+    <header>
+        <div class="lang-selector">
+            <span style="font-size:14px; color:#fff;" id="lblLang">🌐 Language:</span>
+            <select id="languageSelect" onchange="changeLanguage(this.value)">
+                <option value="rw" selected>Kinyarwanda</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+            </select>
+        </div>
+
+        <h1>E VIST</h1>
+        <p id="headerSubtitle">Sisitemu y'Impushya, Gusura n'Ibitekerezo</p>
+    </header>
+
+    <nav>
+        <a id="link-request" class="active-link" onclick="switchTab('leave-request', 'link-request')">Gusaba Uruhushya</a>
+        <a id="link-track" onclick="switchTab('track-status', 'link-track')">Gukurikirana Uruhushya</a>
+        <a id="link-forum" onclick="switchTab('forum-section', 'link-forum')">URUBUGA (Forum)</a>
+        <a id="link-visit" onclick="switchTab('visit-register', 'link-visit')">Kwiyandikisha Gusura</a>
+        <a id="link-parent" onclick="switchTab('parent-register', 'link-parent')">Kwiyandikisha (Umubyeyi)</a>
+        <a id="link-admin-login" onclick="switchTab('admin-login', 'link-admin-login')">Kwinjira / Kwiyandikisha (Abayobozi)</a>
+        <a id="link-help" onclick="switchTab('help-section', 'link-help')">Ubufasha (Help)</a>
+        <a id="link-admin-dash" style="display:none;" onclick="switchTab('admin-dashboard', 'link-admin-dash')">Dashboard <span class="badge">Admin</span></a>
+    </nav>
+
+    <!-- 1. Form yo Gusaba Uruhushya -->
+    <div id="leave-request" class="container section active">
+        <h2 data-i18n="req_title">Gusaba Uruhushya bw'Umunyeshuri</h2>
+        <form onsubmit="handleLeaveRequestSubmit(event)">
+            <div class="form-group">
+                <label data-i18n="lbl_school">Ikigo cy'Ishuri wigamo:</label>
+                <input type="text" id="reqSchool" placeholder="Urugero: College Officiel Mburabuturo" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_student_name">Izina ry'Umunyeshuri:</label>
+                <input type="text" id="reqStudentName" placeholder="Urugero: Mugisha Eric" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_class">Umwaka / Ishuri:</label>
+                <input type="text" id="reqClass" placeholder="Urugero: 5MCE cyangwa S3" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_parent_phone">Inomero y'Usaba Uruhushya (Umubyeyi):</label>
+                <input type="tel" id="reqParentPhone" placeholder="0788XXXXXX" required>
+            </div>
+
+            <!-- LEAVE DURATION & DATES -->
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label data-i18n="lbl_start_date">Itariki yo Kugenda (Departure Date):</label>
+                    <input type="date" id="reqStartDate" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label data-i18n="lbl_end_date">Itariki yo Kugaruka (Return Date):</label>
+                    <input type="date" id="reqEndDate" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="lbl_reason">Impamvu y'Uruhushya:</label>
+                <textarea id="reqReason" rows="3" placeholder="Sobanura impamvu..." required></textarea>
+            </div>
+            <button type="submit" class="btn" data-i18n="btn_submit_req">Ohereza Ubusabe</button>
+        </form>
+    </div>
+
+    <!-- 1.1 TRACK REQUEST STATUS -->
+    <div id="track-status" class="container section">
+        <h2 data-i18n="track_title">Gukurikirana Imiterere y'Uruhushya</h2>
+        <p data-i18n="track_desc">Shyiramo nimero ya telefoni wakoresheje usaba uruhushya ubone amakuru yarwo.</p>
+        <div class="form-group">
+            <label data-i18n="lbl_phone_number">Nimero ya Telefoni:</label>
+            <input type="tel" id="trackPhoneInput" placeholder="0788XXXXXX">
+        </div>
+        <button type="button" class="btn" onclick="trackLeaveRequest()" data-i18n="btn_track">Shakisha Uruhushya</button>
+
+        <div id="trackResultBox" style="margin-top: 20px;"></div>
+
+        <!-- DIGITAL PASS CARD -->
+        <div id="digitalPassBox" class="pass-card">
+            <h3 style="color:#2c3e50; margin-bottom:5px;">E VIST - DIGITAL LEAVE PASS</h3>
+            <p id="passSchool" style="font-weight:bold; color:#1abc9c;"></p>
+            <hr>
+            <p><strong data-i18n="pass_student">Umunyeshuri:</strong> <span id="passStudent"></span></p>
+            <p><strong data-i18n="pass_class">Ishuri:</strong> <span id="passClass"></span></p>
+            <p><strong data-i18n="pass_dates">Igihe cy'Uruhushya:</strong> <span id="passDates" style="color:#e67e22; font-weight:bold;"></span></p>
+            <p><strong data-i18n="pass_reason">Impamvu:</strong> <span id="passReason"></span></p>
+            <p><strong data-i18n="pass_status">Status:</strong> <span id="passStatus" style="font-weight:bold;"></span></p>
+            <button class="btn btn-secondary" onclick="window.print()" data-i18n="btn_print">Print / Save PDF Pass</button>
+        </div>
+    </div>
+
+    <!-- 2. URUBUGA (Forum) WITH LIVE MESSAGES DISPLAY -->
+    <div id="forum-section" class="container section">
+        <h2 data-i18n="forum_title">URUBUGA (Urubuga rwo gusangira ibitekerezo)</h2>
+        <p data-i18n="forum_desc">Aha ni ho ababyeyi n'abayobozi basangirira ibitekerezo no kungurana ibitekerezo.</p>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 25px;">
+            <h3 data-i18n="forum_new_title">Andika Igitekerezo Gishya</h3>
+            <form onsubmit="handlePostSubmit(event)">
+                <div class="form-group">
+                    <label data-i18n="lbl_school_name">Ikigo cy'Ishuri:</label>
+                    <input type="text" id="postSchool" placeholder="Urugero: College Officiel Mburabuturo" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="lbl_your_name">Izina Ryawe:</label>
+                    <input type="text" id="postAuthor" placeholder="Andika izina ryawe" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="lbl_message">Igitekerezo / Message:</label>
+                    <textarea id="postContent" rows="3" placeholder="Sangiza abandi igitekerezo..." required></textarea>
+                </div>
+                <button type="submit" class="btn" data-i18n="btn_share_post">Sangiza Igitekerezo</button>
+            </form>
+        </div>
+
+        <!-- DISPLAY LIVE FORUM MESSAGES SECTION -->
+        <h3 data-i18n="forum_live_title">💬 Ibitekerezo Biri ku Rubuga (Live Feed)</h3>
+        <div id="liveForumFeedContainer">
+            <p style="color: #7f8c8d;" data-i18n="forum_loading">Gushakisha ibitekerezo nshya...</p>
+        </div>
+    </div>
+
+    <!-- 3. Form yo Kwiyandikisha Gusura -->
+    <div id="visit-register" class="container section">
+        <h2 data-i18n="visit_title">Kwiyandikisha ku Wifuza Gusura</h2>
+        <form onsubmit="handleVisitorRegister(event)">
+            <div class="form-group">
+                <label data-i18n="lbl_visit_school">Ikigo cy'Ishuri Ushaka Gusuramo:</label>
+                <input type="text" id="visitSchool" placeholder="Urugero: College Officiel Mburabuturo" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_visitor_name">Izina ry'Uwifeza Gusura:</label>
+                <input type="text" id="visitorName" placeholder="Andika amazina yose" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_phone">Nimero ya Telefoni:</label>
+                <input type="tel" id="visitorPhone" placeholder="0788123456" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_target_student">Izina ry'Umunyeshuri Asura:</label>
+                <input type="text" id="targetStudent" placeholder="Izina ry'umunyeshuri" required>
+            </div>
+            <button type="submit" class="btn" data-i18n="btn_register_visit">Kwiyandikisha Gusura</button>
+        </form>
+    </div>
+
+    <!-- 4. Kwiyandikisha k'Umubyeyi -->
+    <div id="parent-register" class="container section">
+        <h2 data-i18n="parent_title">Kwiyandikisha nka Umubyeyi</h2>
+        <form onsubmit="handleParentRegister(event)">
+            <div class="form-group">
+                <label data-i18n="lbl_parent_school">Ikigo cy'Ishuri Urereramo:</label>
+                <input type="text" id="parentSchool" placeholder="Urugero: College Officiel Mburabuturo" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_parent_name">Izina ry'Umubyeyi:</label>
+                <input type="text" id="parentFullName" placeholder="Andika amazina yose" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_parent_phone_num">Nimero ya Telefoni:</label>
+                <input type="tel" id="parentPhone" placeholder="0788123456" required>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lbl_child_name">Izina ry'Umwana:</label>
+                <input type="text" id="parentChildName" placeholder="Izina ry'umwana wiga mu kigo" required>
+            </div>
+            <button type="submit" class="btn" data-i18n="btn_parent_register">Kwiyandikisha</button>
+        </form>
+    </div>
+
+    <!-- 5. Admin Authentication WITH PASSWORD RECOVERY -->
+    <div id="admin-login" class="container section">
+        
+        <!-- BLOCK A: KWINJIRA -->
+        <div id="adminLoginFormBlock">
+            <h2 data-i18n="admin_login_title">Kwinjira k'Umuyobozi w'Ikigo</h2>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label data-i18n="lbl_admin_school">Ikigo cy'Ishuri Uyobora:</label>
+                    <input type="text" id="adminSchoolInput" placeholder="Urugero: College Officiel Mburabuturo" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="lbl_admin_contact">Email cyangwa Nimero ya Telefoni:</label>
+                    <input type="text" id="loginAdminUser" placeholder="admin@school.rw cyangwa 0788..." required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="lbl_password">Password:</label>
+                    <input type="password" id="loginAdminPass" required>
+                </div>
+                <button type="submit" class="btn" data-i18n="btn_admin_login">Kwinjira mu Ikibaho cy'Ikigo</button>
+            </form>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button type="button" class="btn btn-secondary" style="flex:1;" onclick="toggleAdminForms('register')" data-i18n="btn_new_account">Hanga Konti Nshya</button>
+                <button type="button" class="btn btn-secondary" style="flex:1; background-color: #e67e22;" onclick="toggleAdminForms('recovery')" data-i18n="btn_forgot_password">Wibagiwe Password?</button>
+            </div>
+        </div>
+
+        <!-- BLOCK B: GUHANGA KONTI NSHYA -->
+        <div id="adminRegisterFormBlock" style="display: none;">
+            <h2 data-i18n="admin_reg_title">Guhanga Konti Nshya y'Umuyobozi</h2>
+            <p style="font-size: 13px; color: #555;" data-i18n="admin_reg_desc">Shyiramo amakuru yawe, usabe Verification Code yakirwe kuri Email/Telefoni yo kuyemeza.</p>
+            
+            <form onsubmit="handleAdminRegisterSubmit(event)">
+                <div class="form-group">
+                    <label data-i18n="lbl_admin_fullname">Izina Ryose y'Umuyobozi:</label>
+                    <input type="text" id="regAdminName" placeholder="Urugero: Jean MUGABO" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="lbl_admin_school">Ikigo cy'Ishuri Uyobora:</label>
+                    <input type="text" id="regAdminSchool" placeholder="Urugero: College Officiel Mburabuturo" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="lbl_admin_contact">Email cyangwa Nimero ya Telefoni:</label>
+                    <input type="text" id="regAdminContact" placeholder="0788123456 cyangwa admin@school.rw" required>
+                    <button type="button" class="btn-verification" onclick="sendOTPCode('register')" data-i18n="btn_send_otp">Saba Verification Code (OTP)</button>
+                </div>
+
+                <!-- OTP VERIFICATION BOX -->
+                <div class="otp-box" id="otpSection" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 5px;">
+                        <label style="color: #b71c1c;" data-i18n="lbl_enter_otp">Shyiramo Verification Code yohererejwe:</label>
+                        <input type="text" id="inputOtpCode" maxlength="6" placeholder="Urugero: 123456" style="letter-spacing: 3px; font-weight: bold; text-align: center;">
+                    </div>
+                    <small id="otpHint" style="color: #d32f2f; font-weight: bold;"></small>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="lbl_new_password">Kora Password Nshya:</label>
+                    <input type="password" id="regAdminPass" required>
+                </div>
+
+                <button type="submit" class="btn" id="btnCreateAccount" disabled style="background-color: #888;" data-i18n="btn_confirm_otp_first">Emeza Kode Mbere yo Guhanga Konti</button>
+            </form>
+
+            <button type="button" class="btn btn-secondary" onclick="toggleAdminForms('login')" data-i18n="btn_already_have_account">Ufite konti usanzwe? Injira hano</button>
+        </div>
+
+        <!-- BLOCK C: PASSWORD RECOVERY (KUGARURA PASSWORD) -->
+        <div id="adminRecoveryFormBlock" style="display: none;">
+            <h2 data-i18n="admin_rec_title">Kugarura Password y'Umuyobozi</h2>
+            <p style="font-size: 13px; color: #555;" data-i18n="admin_rec_desc">Shyiramo Ikigo na Contact yawe ngo wohererezwe OTP yo kugarura konti.</p>
+
+            <form onsubmit="handlePasswordResetSubmit(event)">
+                <div class="form-group">
+                    <label data-i18n="lbl_admin_school">Ikigo cy'Ishuri Uyobora:</label>
+                    <input type="text" id="recAdminSchool" placeholder="Urugero: College Officiel Mburabuturo" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="lbl_admin_contact">Email cyangwa Nimero ya Telefoni:</label>
+                    <input type="text" id="recAdminContact" placeholder="0788123456 cyangwa admin@school.rw" required>
+                    <button type="button" class="btn-verification" onclick="sendOTPCode('recovery')" data-i18n="btn_send_otp">Saba Verification Code (OTP)</button>
+                </div>
+
+                <!-- OTP RECOVERY BOX -->
+                <div class="otp-box" id="otpRecoverySection" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 5px;">
+                        <label style="color: #b71c1c;" data-i18n="lbl_enter_otp">Shyiramo Verification Code yohererejwe:</label>
+                        <input type="text" id="inputRecoveryOtpCode" maxlength="6" placeholder="Urugero: 123456" style="letter-spacing: 3px; font-weight: bold; text-align: center;">
+                    </div>
+                    <small id="otpRecoveryHint" style="color: #d32f2f; font-weight: bold;"></small>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="lbl_new_password_custom">Andika Password Nshya Ushaka:</label>
+                    <input type="password" id="recNewPassword" required>
+                </div>
+
+                <button type="submit" class="btn" id="btnResetPassword" disabled style="background-color: #888;" data-i18n="btn_change_password">Hindura Password</button>
+            </form>
+            <button type="button" class="btn btn-secondary" onclick="toggleAdminForms('login')" data-i18n="btn_back_to_login">Subira ku Kwinjira (Login)</button>
+        </div>
+
+    </div>
+
+    <!-- 6. Help Section -->
+    <div id="help-section" class="container section">
+        <h2 data-i18n="help_title">Ubufasha n'Ibibazo Bikunze Kubazwa (FAQ)</h2>
+        
+        <div class="help-card">
+            <h4 data-i18n="help_contact_title">Twandikire Buri Munsi:</h4>
+            <p>📞 <strong data-i18n="help_phone">Telefoni:</strong> 0794670107 / 0796634563</p>
+            <p>📧 <strong>Email:</strong> support@evist.rw / info@evist.rw</p>
+        </div>
+
+        <div class="help-guide-box">
+            <h4 data-i18n="help_how_title">Uko Sisitemu ya E VIST Ikora:</h4>
+            <ul>
+                <li data-i18n="help_step1"><strong>1. Gusaba Uruhushya:</strong> Umubyeyi cyangwa umunyeshuri azuza iforomo yerekana amakuru ye, ikigo wigamo, n'impamvu y'uruhushya.</li>
+                <li data-i18n="help_step2"><strong>2. Urubuga (Forum):</strong> Aha ni ubusabane hagati y'ababyeyi n'ikigo bwo gusangira ibitekerezo no gutanga ibyifuzo.</li>
+                <li data-i18n="help_step3"><strong>3. Kwiyandikisha Gusura:</strong> Abashyitsi n'ababyeyi bifuza gusura ikigo biyandikisha mbere y'uko bagera ku kigo.</li>
+                <li data-i18n="help_step4"><strong>4. Kwiyandikisha k'Umubyeyi:</strong> Umubyeyi yiyandikisha akerekana ikigo urereramo n'umwana ahaye uburenganzira bwo gukurikiranwa.</li>
+                <li data-i18n="help_step5"><strong>5. Abayobozi (Admin Dashboard):</strong> Umuyobozi w'ikigo yinjira muri sisitemu, akabona ibyemezo n'ibitekerezo byo mu kigo cye gusa.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 7. Ikibaho cy'Abayobozi (Admin Dashboard) -->
+    <div id="admin-dashboard" class="container section">
+        <h2 data-i18n="dash_title">Ikibaho cy'Igenzura - <span id="dashSchoolName" class="school-tag">...</span></h2>
+        <p style="color: #27ae60; font-weight: bold;" data-i18n="dash_subtitle">* Amakuru agaragara hano ni ay'abantu n'abanyeshuri bo mu kigo cyanyu gusa.</p>
+
+        <!-- ANALYTICS & CHARTS -->
+        <div style="background: #fafafa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
+            <h3 data-i18n="dash_analytics">📊 Imbonerahamwe y'Impushya (Analytics)</h3>
+            <div style="max-width: 400px; margin: 0 auto;">
+                <canvas id="leavesChart"></canvas>
+            </div>
+        </div>
+
+        <!-- EXPORT REPORTS BUTTONS -->
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+            <button class="btn-export" onclick="exportToCSV()" data-i18n="btn_export_csv">📥 Kuramo Raporo (Excel / CSV)</button>
+            <button class="btn-export" style="background-color: #e67e22;" onclick="window.print()" data-i18n="btn_print_report">🖨️ Print / Save PDF Raporo</button>
+        </div>
+
+        <!-- FILTER & SEARCH BAR -->
+        <div class="filter-box">
+            <strong data-i18n="filter_search">🔍 Shakisha / Kurobanura:</strong>
+            <input type="text" id="adminSearchInput" onkeyup="filterAdminLeaves()" placeholder="Shakisha izina ry'umunyeshuri..." style="flex:1; padding:8px;">
+            <select id="adminStatusFilter" onchange="filterAdminLeaves()" style="padding:8px;">
+                <option value="ALL" data-i18n="status_all">Status Zose</option>
+                <option value="Ikirindiriwe" data-i18n="status_pending">Ikirindiriwe</option>
+                <option value="Emejwe" data-i18n="status_approved">Emejwe (Approved)</option>
+                <option value="Rwahakanywe" data-i18n="status_rejected">Rwahakanywe (Rejected)</option>
+                <option value="Expired" data-i18n="status_expired">Rwararangiye (Expired)</option>
+            </select>
+        </div>
+
+        <!-- IMPUSHYA ZISABIWE TABLE WITH PARENT SMS CONFIRMATION BUTTON -->
+        <h3 data-i18n="table1_title">1. Impushya Zisabiwe mu Kigo Cyo</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th data-i18n="th_student">Umunyeshuri</th>
+                    <th data-i18n="th_school">Ishuri</th>
+                    <th data-i18n="th_dates">Igihe cy'Uruhushya</th>
+                    <th data-i18n="th_reason">Impamvu</th>
+                    <th data-i18n="th_parent_phone">Tel y'Umubyeyi</th>
+                    <th data-i18n="th_status">Status</th>
+                    <th data-i18n="th_actions">Icyo Gukora (Actions)</th>
+                </tr>
+            </thead>
+            <tbody id="adminLeavesTableBody"></tbody>
+        </table>
+
+        <!-- STUDENT PROFILE & LEAVE HISTORY TABLE -->
+        <h3 style="margin-top: 30px;" data-i18n="table2_title">2. Ikarita n'Amateka y'Impushya z'Abarimu/Abanyeshuri (Student Profiles)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th data-i18n="th_student">Umunyeshuri</th>
+                    <th data-i18n="th_school">Ishuri</th>
+                    <th data-i18n="th_total_leaves">Igiteranyo cy'Impushya Yasabye</th>
+                    <th data-i18n="th_actions">Icyo Gukora</th>
+                </tr>
+            </thead>
+            <tbody id="adminStudentProfilesBody"></tbody>
+        </table>
+
+        <h3 style="margin-top: 30px;" data-i18n="table3_title">3. Ababyeyi Biyandikishije Kurerera mu Kigo Cyo</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th data-i18n="th_parent_name">Izina ry'Umubyeyi</th>
+                    <th data-i18n="th_phone">Tel</th>
+                    <th data-i18n="th_child_name">Izina ry'Umwana</th>
+                </tr>
+            </thead>
+            <tbody id="adminParentsTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- E VIST AI -->
+    <div class="evist-ai-widget" onclick="showToast('E VIST AI: Ndi umufasha w\'ikigo cyanyu muri E VIST. Nshobora kubafasha kurobanura amakuru!', 'info')">
+        <span>🤖</span>
+        <span>E VIST AI</span>
+    </div>
+
+    <script>
+        // Localization translations dictionary
+        const translations = {
+            rw: {
+                lblLang: "🌐 Ururimi:",
+                headerSubtitle: "Sisitemu y'Impushya, Gusura n'Ibitekerezo",
+                "link-request": "Gusaba Uruhushya",
+                "link-track": "Gukurikirana Uruhushya",
+                "link-forum": "URUBUGA (Forum)",
+                "link-visit": "Kwiyandikisha Gusura",
+                "link-parent": "Kwiyandikisha (Umubyeyi)",
+                "link-admin-login": "Kwinjira / Kwiyandikisha (Abayobozi)",
+                "link-help": "Ubufasha (Help)",
+                req_title: "Gusaba Uruhushya bw'Umunyeshuri",
+                lbl_school: "Ikigo cy'Ishuri wigamo:",
+                lbl_student_name: "Izina ry'Umunyeshuri:",
+                lbl_class: "Umwaka / Ishuri:",
+                lbl_parent_phone: "Inomero y'Usaba Uruhushya (Umubyeyi):",
+                lbl_start_date: "Itariki yo Kugenda (Departure Date):",
+                lbl_end_date: "Itariki yo Kugaruka (Return Date):",
+                lbl_reason: "Impamvu y'Uruhushya:",
+                btn_submit_req: "Ohereza Ubusabe",
+                track_title: "Gukurikirana Imiterere y'Uruhushya",
+                track_desc: "Shyiramo nimero ya telefoni wakoresheje usaba uruhushya ubone amakuru yarwo.",
+                lbl_phone_number: "Nimero ya Telefoni:",
+                btn_track: "Shakisha Uruhushya",
+                pass_student: "Umunyeshuri:",
+                pass_class: "Ishuri:",
+                pass_dates: "Igihe cy'Uruhushya:",
+                pass_reason: "Impamvu:",
+                pass_status: "Status:",
+                btn_print: "Print / Save PDF Pass",
+                forum_title: "URUBUGA (Urubuga rwo gusangira ibitekerezo)",
+                forum_desc: "Aha ni ho ababyeyi n'abayobozi basangirira ibitekerezo no kungurana ibitekerezo.",
+                forum_new_title: "Andika Igitekerezo Gishya",
+                lbl_school_name: "Ikigo cy'Ishuri:",
+                lbl_your_name: "Izina Ryawe:",
+                lbl_message: "Igitekerezo / Message:",
+                btn_share_post: "Sangiza Igitekerezo",
+                forum_live_title: "💬 Ibitekerezo Biri ku Rubuga (Live Feed)",
+                forum_loading: "Gushakisha ibitekerezo nshya...",
+                visit_title: "Kwiyandikisha ku Wifuza Gusura",
+                lbl_visit_school: "Ikigo cy'Ishuri Ushaka Gusuramo:",
+                lbl_visitor_name: "Izina ry'Uwifeza Gusura:",
+                lbl_phone: "Nimero ya Telefoni:",
+                lbl_target_student: "Izina ry'Umunyeshuri Asura:",
+                btn_register_visit: "Kwiyandikisha Gusura",
+                parent_title: "Kwiyandikisha nka Umubyeyi",
+                lbl_parent_school: "Ikigo cy'Ishuri Urereramo:",
+                lbl_parent_name: "Izina ry'Umubyeyi:",
+                lbl_parent_phone_num: "Nimero ya Telefoni:",
+                lbl_child_name: "Izina ry'Umwana:",
+                btn_parent_register: "Kwiyandikisha",
+                admin_login_title: "Kwinjira k'Umuyobozi w'Ikigo",
+                lbl_admin_school: "Ikigo cy'Ishuri Uyobora:",
+                lbl_admin_contact: "Email cyangwa Nimero ya Telefoni:",
+                lbl_password: "Password:",
+                btn_admin_login: "Kwinjira mu Ikibaho cy'Ikigo",
+                btn_new_account: "Hanga Konti Nshya",
+                btn_forgot_password: "Wibagiwe Password?",
+                admin_reg_title: "Guhanga Konti Nshya y'Umuyobozi",
+                admin_reg_desc: "Shyiramo amakuru yawe, usabe Verification Code yakirwe kuri Email/Telefoni yo kuyemeza.",
+                lbl_admin_fullname: "Izina Ryose y'Umuyobozi:",
+                btn_send_otp: "Saba Verification Code (OTP)",
+                lbl_enter_otp: "Shyiramo Verification Code yohererejwe:",
+                lbl_new_password: "Kora Password Nshya:",
+                btn_confirm_otp_first: "Emeza Kode Mbere yo Guhanga Konti",
+                btn_already_have_account: "Ufite konti usanzwe? Injira hano",
+                admin_rec_title: "Kugarura Password y'Umuyobozi",
+                admin_rec_desc: "Shyiramo Ikigo na Contact yawe ngo wohererezwe OTP yo kugarura konti.",
+                lbl_new_password_custom: "Andika Password Nshya Ushaka:",
+                btn_change_password: "Hindura Password",
+                btn_back_to_login: "Subira ku Kwinjira (Login)",
+                help_title: "Ubufasha n'Ibibazo Bikunze Kubazwa (FAQ)",
+                help_contact_title: "Twandikire Buri Munsi:",
+                help_phone: "Telefoni:",
+                help_how_title: "Uko Sisitemu ya E VIST Ikora:",
+                help_step1: "1. Gusaba Uruhushya: Umubyeyi cyangwa umunyeshuri azuza iforomo yerekana amakuru ye, ikigo wigamo, n'impamvu y'uruhushya.",
+                help_step2: "2. Urubuga (Forum): Aha ni ubusabane hagati y'ababyeyi n'ikigo bwo gusangira ibitekerezo no gutanga ibyifuzo.",
+                help_step3: "3. Kwiyandikisha Gusura: Abashyitsi n'ababyeyi bifuza gusura ikigo biyandikisha mbere y'uko bagera ku kigo.",
+                help_step4: "4. Kwiyandikisha k'Umubyeyi: Umubyeyi yiyandikisha akerekana ikigo urereramo n'umwana ahaye uburenganzira bwo gukurikiranwa.",
+                help_step5: "5. Abayobozi (Admin Dashboard): Umuyobozi w'ikigo yinjira muri sisitemu, akabona ibyemezo n'ibitekerezo byo mu kigo cye gusa.",
+                dash_title: "Ikibaho cy'Igenzura -",
+                dash_subtitle: "* Amakuru agaragara hano ni ay'abantu n'abanyeshuri bo mu kigo cyanyu gusa.",
+                dash_analytics: "📊 Imbonerahamwe y'Impushya (Analytics)",
+                btn_export_csv: "📥 Kuramo Raporo (Excel / CSV)",
+                btn_print_report: "🖨️ Print / Save PDF Raporo",
+                filter_search: "🔍 Shakisha / Kurobanura:",
+                status_all: "Status Zose",
+                status_pending: "Ikirindiriwe",
+                status_approved: "Emejwe (Approved)",
+                status_rejected: "Rwahakanywe (Rejected)",
+                status_expired: "Rwararangiye (Expired)",
+                table1_title: "1. Impushya Zisabiwe mu Kigo Cyo",
+                th_student: "Umunyeshuri",
+                th_school: "Ishuri",
+                th_dates: "Igihe cy'Uruhushya",
+                th_reason: "Impamvu",
+                th_parent_phone: "Tel y'Umubyeyi",
+                th_status: "Status",
+                th_actions: "Icyo Gukora (Actions)",
+                table2_title: "2. Ikarita n'Amateka y'Impushya z'Abarimu/Abanyeshuri (Student Profiles)",
+                th_total_leaves: "Igiteranyo cy'Impushya Yasabye",
+                table3_title: "3. Ababyeyi Biyandikishije Kurerera mu Kigo Cyo",
+                th_parent_name: "Izina ry'Umubyeyi",
+                th_phone: "Tel",
+                th_child_name: "Izina ry'Umwana"
+            },
+            en: {
+                lblLang: "🌐 Language:",
+                headerSubtitle: "Leave, Visit & Feedback Management System",
+                "link-request": "Request Leave",
+                "link-track": "Track Leave",
+                "link-forum": "FORUM",
+                "link-visit": "Visitor Registration",
+                "link-parent": "Parent Registration",
+                "link-admin-login": "Admin Login / Register",
+                "link-help": "Help & FAQ",
+                req_title: "Student Leave Request",
+                lbl_school: "School Name:",
+                lbl_student_name: "Student Name:",
+                lbl_class: "Class / Grade:",
+                lbl_parent_phone: "Parent/Guardian Phone Number:",
+                lbl_start_date: "Departure Date:",
+                lbl_end_date: "Return Date:",
+                lbl_reason: "Reason for Leave:",
+                btn_submit_req: "Submit Request",
+                track_title: "Track Leave Status",
+                track_desc: "Enter the phone number used during the leave request to check its status.",
+                lbl_phone_number: "Phone Number:",
+                btn_track: "Search Leave",
+                pass_student: "Student:",
+                pass_class: "Class:",
+                pass_dates: "Leave Period:",
+                pass_reason: "Reason:",
+                pass_status: "Status:",
+                btn_print: "Print / Save PDF Pass",
+                forum_title: "COMMUNITY FORUM",
+                forum_desc: "This is a platform for parents and administrators to share ideas and feedback.",
+                forum_new_title: "Create New Post",
+                lbl_school_name: "School Name:",
+                lbl_your_name: "Your Name:",
+                lbl_message: "Message / Feedback:",
+                btn_share_post: "Share Post",
+                forum_live_title: "💬 Live Forum Feed",
+                forum_loading: "Loading new posts...",
+                visit_title: "Visitor Registration",
+                lbl_visit_school: "School to Visit:",
+                lbl_visitor_name: "Visitor Full Name:",
+                lbl_phone: "Phone Number:",
+                lbl_target_student: "Student to Visit:",
+                btn_register_visit: "Register Visit",
+                parent_title: "Parent Registration",
+                lbl_parent_school: "School Name:",
+                lbl_parent_name: "Parent Full Name:",
+                lbl_parent_phone_num: "Phone Number:",
+                lbl_child_name: "Child's Name:",
+                btn_parent_register: "Register",
+                admin_login_title: "Administrator Login",
+                lbl_admin_school: "Managed School Name:",
+                lbl_admin_contact: "Email or Phone Number:",
+                lbl_password: "Password:",
+                btn_admin_login: "Login to School Dashboard",
+                btn_new_account: "Create New Account",
+                btn_forgot_password: "Forgot Password?",
+                admin_reg_title: "Create Admin Account",
+                admin_reg_desc: "Fill in your details and request a verification code to confirm.",
+                lbl_admin_fullname: "Administrator Full Name:",
+                btn_send_otp: "Request Verification Code (OTP)",
+                lbl_enter_otp: "Enter Verification Code Received:",
+                lbl_new_password: "Create New Password:",
+                btn_confirm_otp_first: "Confirm Code Before Creating Account",
+                btn_already_have_account: "Already have an account? Login here",
+                admin_rec_title: "Reset Admin Password",
+                admin_rec_desc: "Enter your school and contact details to receive an OTP for recovery.",
+                lbl_new_password_custom: "Enter Desired New Password:",
+                btn_change_password: "Change Password",
+                btn_back_to_login: "Back to Login",
+                help_title: "Help & Frequently Asked Questions (FAQ)",
+                help_contact_title: "Contact Us Daily:",
+                help_phone: "Phone:",
+                help_how_title: "How E VIST Works:",
+                help_step1: "1. Request Leave: Parents or students fill out a form with details, school name, and reason.",
+                help_step2: "2. Forum: A space for communication and suggestions between parents and the school.",
+                help_step3: "3. Visitor Registration: Visitors and parents register before arriving at school.",
+                help_step4: "4. Parent Registration: Parents register to link their account with their child's details.",
+                help_step5: "5. Admin Dashboard: School administrators log in to manage requests and feedback specific to their institution.",
+                dash_title: "Control Dashboard -",
+                dash_subtitle: "* Information displayed here pertains only to your school's students and staff.",
+                dash_analytics: "📊 Leave Analytics",
+                btn_export_csv: "📥 Export Report (Excel / CSV)",
+                btn_print_report: "🖨️ Print / Save PDF Report",
+                filter_search: "🔍 Search / Filter:",
+                status_all: "All Statuses",
+                status_pending: "Pending",
+                status_approved: "Approved",
+                status_rejected: "Rejected",
+                status_expired: "Expired",
+                table1_title: "1. Leave Requests in Your School",
+                th_student: "Student",
+                th_school: "School",
+                th_dates: "Leave Period",
+                th_reason: "Reason",
+                th_parent_phone: "Parent Phone",
+                th_status: "Status",
+                th_actions: "Actions",
+                table2_title: "2. Student Profiles & Leave History",
+                th_total_leaves: "Total Leaves Requested",
+                table3_title: "3. Registered Parents for Your School",
+                th_parent_name: "Parent Name",
+                th_phone: "Phone",
+                th_child_name: "Child Name"
+            },
+            fr: {
+                lblLang: "🌐 Langue :",
+                headerSubtitle: "Système de Gestion des Congés, Visites et Avis",
+                "link-request": "Demander un Congé",
+                "link-track": "Suivre le Congé",
+                "link-forum": "FORUM",
+                "link-visit": "Enregistrement des Visiteurs",
+                "link-parent": "Enregistrement Parent",
+                "link-admin-login": "Connexion / Inscription (Admin)",
+                "link-help": "Aide & FAQ",
+                req_title: "Demande de Congé Étudiant",
+                lbl_school: "Nom de l'École :",
+                lbl_student_name: "Nom de l'Étudiant :",
+                lbl_class: "Classe / Niveau :",
+                lbl_parent_phone: "Numéro de Téléphone du Parent :",
+                lbl_start_date: "Date de Départ :",
+                lbl_end_date: "Date de Retour :",
+                lbl_reason: "Motif du Congé :",
+                btn_submit_req: "Soumettre la Demande",
+                track_title: "Suivre l'État du Congé",
+                track_desc: "Entrez le numéro de téléphone utilisé lors de la demande pour vérifier son état.",
+                lbl_phone_number: "Numéro de Téléphone :",
+                btn_track: "Rechercher le Congé",
+                pass_student: "Étudiant :",
+                pass_class: "Classe :",
+                pass_dates: "Période de Congé :",
+                pass_reason: "Motif :",
+                pass_status: "Statut :",
+                btn_print: "Imprimer / Enregistrer le Pass PDF",
+                forum_title: "FORUM COMMUNAUTAIRE",
+                forum_desc: "Un espace d'échange et de partage d'idées entre parents et administrateurs.",
+                forum_new_title: "Créer une Nouvelle Publication",
+                lbl_school_name: "Nom de l'École :",
+                lbl_your_name: "Votre Nom :",
+                lbl_message: "Message / Avis :",
+                btn_share_post: "Partager l'Avis",
+                forum_live_title: "💬 Flux du Forum en Direct",
+                forum_loading: "Chargement des nouvelles publications...",
+                visit_title: "Enregistrement des Visiteurs",
+                lbl_visit_school: "École à Visiter :",
+                lbl_visitor_name: "Nom complet du Visiteur :",
+                lbl_phone: "Numéro de Téléphone :",
+                lbl_target_student: "Étudiant à Visiter :",
+                btn_register_visit: "Enregistrer la Visite",
+                parent_title: "Enregistrement Parent",
+                lbl_parent_school: "Nom de l'École :",
+                lbl_parent_name: "Nom complet du Parent :",
+                lbl_parent_phone_num: "Numéro de Téléphone :",
+                lbl_child_name: "Nom de l'Enfant :",
+                btn_parent_register: "S'inscrire",
+                admin_login_title: "Connexion Administrateur",
+                lbl_admin_school: "Nom de l'École Gérée :",
+                lbl_admin_contact: "E-mail ou Numéro de Téléphone :",
+                lbl_password: "Mot de passe :",
+                btn_admin_login: "Se connecter au Tableau de Bord",
+                btn_new_account: "Créer un Nouveau Compte",
+                btn_forgot_password: "Mot de passe oublié ?",
+                admin_reg_title: "Créer un Compte Administrateur",
+                admin_reg_desc: "Remplissez vos informations et demandez un code de vérification pour confirmer.",
+                lbl_admin_fullname: "Nom Complet de l'Administrateur :",
+                btn_send_otp: "Demander le Code de Vérification (OTP)",
+                lbl_enter_otp: "Entrez le Code de Vérification Reçu :",
+                lbl_new_password: "Créer un Nouveau Mot de Passe :",
+                btn_confirm_otp_first: "Confirmer le Code avant de Créer le Compte",
+                btn_already_have_account: "Déjà un compte ? Connectez-vous ici",
+                admin_rec_title: "Réinitialiser le Mot de Passe Admin",
+                admin_rec_desc: "Entrez votre école et vos coordonnées pour recevoir un OTP de récupération.",
+                lbl_new_password_custom: "Entrer le Nouveau Mot de Passe Souhaité :",
+                btn_change_password: "Changer le Mot de Passe",
+                btn_back_to_login: "Retour à la Connexion",
+                help_title: "Aide et Foire Aux Questions (FAQ)",
+                help_contact_title: "Contactez-nous Quotidiennement :",
+                help_phone: "Téléphone :",
+                help_how_title: "Comment fonctionne E VIST :",
+                help_step1: "1. Demander un Congé : Les parents ou les étudiants remplissent un formulaire avec les détails et le motif.",
+                help_step2: "2. Forum : Un espace de communication et de suggestions entre les parents et l'école.",
+                help_step3: "3. Enregistrement Visiteur : Les visiteurs s'enregistrent avant d'arriver à l'établissement.",
+                help_step4: "4. Enregistrement Parent : Les parents lient leur compte aux informations de leur enfant.",
+                help_step5: "5. Tableau de Bord Admin : Les administrateurs gèrent les demandes et avis spécifiques à leur école.",
+                dash_title: "Tableau de Bord -",
+                dash_subtitle: "* Les informations affichées ici concernent uniquement les étudiants et le personnel de votre école.",
+                dash_analytics: "📊 Analyses des Congés",
+                btn_export_csv: "📥 Exporter le Rapport (Excel / CSV)",
+                btn_print_report: "🖨️ Imprimer / Enregistrer le Rapport PDF",
+                filter_search: "🔍 Rechercher / Filtrer :",
+                status_all: "Tous les Statuts",
+                status_pending: "En attente",
+                status_approved: "Approuvé",
+                status_rejected: "Rejeté",
+                status_expired: "Expiré",
+                table1_title: "1. Demandes de Congé dans Votre École",
+                th_student: "Étudiant",
+                th_school: "École",
+                th_dates: "Période de Congé",
+                th_reason: "Motif",
+                th_parent_phone: "Tél du Parent",
+                th_status: "Statut",
+                th_actions: "Actions",
+                table2_title: "2. Profils des Étudiants et Historique des Congés",
+                th_total_leaves: "Total des Congés Demandés",
+                table3_title: "3. Parents Enregistrés pour Votre École",
+                th_parent_name: "Nom du Parent",
+                th_phone: "Tél",
+                th_child_name: "Nom de l'Enfant"
+            }
+        };
+
+        function changeLanguage(lang) {
+            const t = translations[lang] || translations['rw'];
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (t[key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = t[key];
+                    } else {
+                        element.innerText = t[key];
+                    }
+                }
+            });
+            // Handle nav items specifically
+            const navKeys = ['link-request', 'link-track', 'link-forum', 'link-visit', 'link-parent', 'link-admin-login', 'link-help'];
+            navKeys.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && t[id]) {
+                    // preserve badges if any
+                    const badge = el.querySelector('.badge');
+                    el.childNodes[0].textContent = t[id] + " ";
+                    if (badge) el.appendChild(badge);
+                }
+            });
+            document.getElementById('lblLang').innerText = t['lblLang'];
+            document.getElementById('headerSubtitle').innerText = t['headerSubtitle'];
+        }
+
+        let currentAdminSchool = "";
+        let generatedOTP = null;
+        let isOtpVerified = false;
+        let allLeavesData = [];
+        let chartInstance = null;
+
+        // REAL-TIME TOAST NOTIFICATION UTILITY
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerText = message;
+            
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 4000);
+        }
+
+        function switchTab(sectionId, linkId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active-link'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            if(document.getElementById(linkId)) {
+                document.getElementById(linkId).classList.add('active-link');
+            }
+
+            if(sectionId === 'forum-section') {
+                listenToLiveForum();
+            }
+        }
+
+        function toggleAdminForms(formType) {
+            document.getElementById('adminLoginFormBlock').style.display = 'none';
+            document.getElementById('adminRegisterFormBlock').style.display = 'none';
+            document.getElementById('adminRecoveryFormBlock').style.display = 'none';
+
+            if (formType === 'register') {
+                document.getElementById('adminRegisterFormBlock').style.display = 'block';
+            } else if (formType === 'recovery') {
+                document.getElementById('adminRecoveryFormBlock').style.display = 'block';
+            } else {
+                document.getElementById('adminLoginFormBlock').style.display = 'block';
+            }
+        }
+
+        // --- VERIFICATION CODE (OTP) LOGIC FOR REGISTER & RECOVERY ---
+        function sendOTPCode(context = 'register') {
+            let contact = "";
+            if (context === 'register') {
+                contact = document.getElementById('regAdminContact').value.trim();
+            } else {
+                contact = document.getElementById('recAdminContact').value.trim();
+            }
+
+            if(!contact) {
+                showToast("Banza wandike Email cyangwa Nimero ya Telefoni!", "error");
+                return;
+            }
+
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+            if (context === 'register') {
+                document.getElementById('otpSection').style.display = 'block';
+                document.getElementById('otpHint').innerText = "Kode yawe yo kwemeza ni: " + generatedOTP + " (Muri sisitemu y'ukuri yohererezwa kuri SMS/Email).";
+                document.getElementById('inputOtpCode').addEventListener('input', () => verifyOTP('register'));
+            } else {
+                document.getElementById('otpRecoverySection').style.display = 'block';
+                document.getElementById('otpRecoveryHint').innerText = "Kode yo kugarura password ni: " + generatedOTP;
+                document.getElementById('inputRecoveryOtpCode').addEventListener('input', () => verifyOTP('recovery'));
+            }
+            
+            showToast("Verification Code yohererejwe kuri: " + contact + "\nCode: " + generatedOTP, "info");
+        }
+
+        function verifyOTP(context = 'register') {
+            let inputVal = "";
+            let btn = null;
+            let hint = null;
+
+            if (context === 'register') {
+                inputVal = document.getElementById('inputOtpCode').value.trim();
+                btn = document.getElementById('btnCreateAccount');
+                hint = document.getElementById('otpHint');
+            } else {
+                inputVal = document.getElementById('inputRecoveryOtpCode').value.trim();
+                btn = document.getElementById('btnResetPassword');
+                hint = document.getElementById('otpRecoveryHint');
+            }
+
+            if (inputVal === generatedOTP) {
+                isOtpVerified = true;
+                btn.disabled = false;
+                btn.style.backgroundColor = "#27ae60";
+                btn.innerText = "Emeza (Verify) - Byagenze Neza!";
+                hint.style.color = "#27ae60";
+                hint.innerText = "✓ Code yemejwe neza!";
+                showToast("Code yemejwe neza!", "success");
+            } else {s
+                isOtpVerified = false;
+                btn.disabled = true;
+                btn.style.backgroundColor = "#888";
+                hint.style.color = "#d32f2f";
+            }
+        }
+
+        // Dummy handlers to prevent runtime errors on submit if triggered
+        function handleLeaveRequestSubmit(e) { e.preventDefault(); showToast("Ubusabe bwohererejwe neza!", "success"); }
+        function trackLeaveRequest() { showToast("Gushakisha ubusabe...", "info"); }
+        function handlePostSubmit(e) { e.preventDefault(); showToast("Igitekerezo cyoherejwe!", "success"); }
+        function handleVisitorRegister(e) { e.preventDefault(); showToast("Wiyandikishije gusura neza!", "success"); }
+        function handleParentRegister(e) { e.preventDefault(); showToast("Kwiyandikisha k'umubyeyi byagenze neza!", "success"); }
+        function handleAdminLogin(e) { e.preventDefault(); switchTab('admin-dashboard', 'link-admin-dash'); }
+        function handleAdminRegisterSubmit(e) { e.preventDefault(); }
+        function handlePasswordResetSubmit(e) { e.preventDefault(); }
+        function listenToLiveForum() {}
+        function filterAdminLeaves() {}
+        function exportToCSV() {}
+    </script>
+</body>
+</html>
